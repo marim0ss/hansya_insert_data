@@ -17,7 +17,7 @@ const CHECK_WORD = '%E8%A1%8C%E6%94%BF%E6%8C%87%E5%B0%8E%E3%80%80%E9%80%81%E6%A4
 const HEAD_URL = 'https://www.google.com/search';
 var mkdir_cmd = 'mkdir -p \"${section_folder_name}\"/\"${sub_folder_name}\"';
 var cp_cmd_origin = 'cp \.\.\/hansyaPDF\/\"Google検索画面_\${seach_word}\"\.pdf \"${section_folder_name}\"\/\"${sub_folder_name}\"';
-var and = ' && ';
+const AND = ' && ';
 var set_cmd = "";
 
 //配列で扱う-------------------------------------------------------------------------
@@ -46,13 +46,10 @@ function getUrlCmdArray() {
     var foward_seachword = DATA_RANGE[i-1][0];
     var checkbox = DATA_RANGE[i][1];
     var seach_word = DATA_RANGE[i][0];
-    Logger.log('格納先：' + section_folder_name);
     
     mkdir_cmd = mkdir_cmd
      .replace("${section_folder_name}",section_folder_name)
      .replace("${sub_folder_name}",seach_word);
-    //var cp_cmd_origin = 
-      //'cp \.\.\/hansyaPDF\/\"Google検索画面_\${seach_word}\"\.pdf \"${section_folder_name}\"\/\"${sub_folder_name}\"';
 
     cp_cmd_origin = cp_cmd_origin
      .replace("${seach_word}",seach_word)
@@ -60,10 +57,9 @@ function getUrlCmdArray() {
     
     if (checkbox == false){
       var cp_cmd = cp_cmd_origin
-      .replace("${sub_folder_name}",seach_word);
-      
-      set_cmd = mkdir_cmd + and + cp_cmd;     
-    }else{  // チェックのついてる=代表者の時、mkdirなし、cp先も変える
+      　.replace("${sub_folder_name}",seach_word);
+      set_cmd = mkdir_cmd + AND + cp_cmd;
+    }else{  // チェックがついてる=代表者の時、mkdirなし、cp先も変える
       var cp_cmd = cp_cmd_origin
       .replace("${sub_folder_name}",foward_seachword);
       set_cmd = cp_cmd;
@@ -93,7 +89,7 @@ function checkPresident() {  // 「代表者」列の名前と検索ワードが
  writeToSheet(data_sheet,new_data_range);
 }
 
-function writeToSheet(sheet_name,data_range) { // 書き込みも関数化
+function writeToSheet(sheet_name,data_range) {
   sheet_name.getRange(2, 1, data_range.length, data_range[0].length).setValues(data_range);
 }
 
