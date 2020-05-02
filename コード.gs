@@ -89,6 +89,24 @@ function checkPresident() {  // 「代表者」列の名前と検索ワードが
  writeToSheet(data_sheet,new_data_range);
 }
 
+function makePresidentRow() {  //代表者が抜けていたら、行追加＋検索ワードに書き込み
+  let new_data_range = [];
+  for (var k = 1; k < DATA_RANGE.length; k++) {
+    //var next_word = DATA_RANGE[k+1][0];
+    
+    //Logger.log(DATA_RANGE[k+1][0]);  // 1行ずつ取り出し
+    var foward_cell_president = DATA_RANGE[k-1][4];
+    if (foward_cell_president && (DATA_RANGE[k][0] !== foward_cell_president)) {
+      Logger.log(foward_cell_president + 'の行がないよ！！');
+    } else {
+      Logger.log(DATA_RANGE[k][0] + 'はOK！！');
+      DATA_RANGE[k];
+    }
+    //new_data_range.push( DATA_RANGE[k]);
+  }
+ //writeToSheet(data_sheet,new_data_range);
+}
+
 function writeToSheet(sheet_name,data_range) {
   sheet_name.getRange(2, 1, data_range.length, data_range[0].length).setValues(data_range);
 }
