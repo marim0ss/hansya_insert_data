@@ -1,4 +1,5 @@
 const feed_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('feed');
+const add_data_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('add_data');
 const lastColumn = feed_sheet.getLastColumn();
 // シート関数には +変数+ 
 const doda_url = 'https://doda.jp/guide/kyujin_bairitsu/';
@@ -31,6 +32,25 @@ function setRowColor(header_row, inner_row) {
   feed_sheet.getRange(header_row, 1, 1, lastColumn).setBackground('#84e1ef');
   feed_sheet.getRange(inner_row, 1, 1, lastColumn).setBackground('yellow');
 }
+//スプレッドシートの内容をadd_dataシートに追加
+function addFeedData() {
+  let data_range = feed_sheet.getDataRange().getValues();
+  //Logger.log(data_range[2], data_range[22]); //配列なので０始まり
+  /* [業種, 求人倍率, 前月比, 前年同月比, 求人数, 転職希望者数] 
+  [営業系, 2.33, ↑0.04, ↓-0.14, , ]
+  */
+  let new_data_array = [];
+  let Reg_exp = /.*IT.*|全体/;
+  
+  for (var i = 0; i < data_range.length; i++) {
+    if (data_range[i][0].match(Reg_exp)){
+      Logger.log(data_range[i]);
+    }
+    
+  //return new_data_array;
+  //Logger.log(new_data_array);
+  }
+}
 
 function urlfetch() {
   const postheader = {
@@ -47,39 +67,21 @@ function urlfetch() {
   //Logger.log(UrlFetchApp.fetch(doda_url, parameters).getContentText('UTF-8'));
   const content = UrlFetchApp.fetch(doda_url, parameters).getContentText('UTF-8');
   
-  //const m = content.match(/<td(?: style=".+")?>(?:<span style=".{1,15}">.<\/span>)?([^<]+)<\/td>/gm);
-  let m = /<td(?: style=".+")?>(?:<span style=".{1,15}">.<\/span>)?([^<]+)<\/td>/gm;
+  //let m = content.match(/<td(?: style=".+")?>(?:<span style=".{1,15}">.<\/span>)?([^<]+)<\/td>/gm);
+  //Logger.log(M);
   let array = [];
-  while ((i = m.exec(content)) != null) {
-  array.push(i[1]);
+  let num_Regexp = /<td(?: style=".+")?(?:><span style=".+)?>(-*\d\.\d\d)<\/td>/gm;  //数字のみ抜き出せる
+  let headnum_Regexp = /<td(?: style=".+")?(?:><span style=".+)?>([^<].{1,15}[^>])<\/td>/gm; // 全体見出し以外の抜き出し可
+  
+  let myRegexp = /<td(?: style=".+")?>(?:<span style=".{1,15}">.<\/span>)?([^<]+)<\/td>/gm; // 全体見出し抜き出し可(-も入る)
+  var elems = content.matchAll(myRegexp);
+  
+  for(var i = 0; i < elems.length; i++ ) {
+    //var str = elems[i];
+    Logger.log(elems[i]);
+    // 以下の一致したら除外する
+    //if (str != '-') { array.push(str) }
   }
-
-  Logger.log(array);
-  /*<table class="tableBase v-al-m bg--blue">
-.
-.
-<tr>
-<td style="border-bottom:solid 1px;">全体</td>
-<td style="border-bottom:solid 1px;">2.54</td>
-<td style="border-bottom:solid 1px;"><span style="color:#ff6600;">↑</span>　  0.02</td>
-<td style="border-bottom:solid 1px;"><span style="color:#0a50a1;">↓</span>　 -0.08</td>
-<td style="border-bottom:solid 1px;">-</td>
-<td style="border-bottom:solid 1px;">-</td>
-</tr>
-<tr>
-<td>IT・通信</td><td>7.04</td>
-<td><span style="color:#ff6600;">↑</span>0.24</td>
-<td><span style="color:#0a50a1;">↓</span>-0.23</td>
-<td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a10plus.png" alt="10＋"></span></td></tr>
-<tr><td>メディア</td><td>1.70</td><td><span style="color:#0a50a1;">↓</span>-0.10</td><td><span style="color:#0a50a1;">↓</span>-0.41</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b07.png" alt="7"></span></td>
-<td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a04.png" alt="4"></span></td></tr>
-<tr><td>金融</td><td>2.19</td><td><span style="color:#ff6600;">↑</span>0.02</td><td><span style="color:#ff6600;">↑</span>0.33</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a06.png" alt="6"></span></td></tr>		
-<tr><td>メディカル</td><td>2.28</td><td><span style="color:#ff6600;">↑</span>0.05</td><td><span style="color:#ff6600;">↑</span>0.21</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a04.png" alt="4"></span></td></tr>
-<tr><td>メーカー</td><td>1.90</td><td><span style="color:#ff6600;">↑</span>0.03</td><td><span style="color:#0a50a1;">↓</span>-0.22</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a10plus.png" alt="10＋"></span></td></tr>
-<tr><td>商社・流通</td><td>1.15</td><td><span style="color:#222222;">→</span>0.00</td><td><span style="color:#0a50a1;">↓</span>-0.06</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b06.png" alt="6"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a05.png" alt="5"></span></td></tr>
-<tr><td>小売・外食</td><td>1.32</td><td><span style="color:#ff6600;">↑</span>0.02</td><td><span style="color:#ff6600;">↑</span>0.37</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a10plus.png" alt="10＋"></span></td></tr>
-<tr><td>サービス</td><td>2.75</td><td><span style="color:#0a50a1;">↓</span>-0.02</td><td><span style="color:#0a50a1;">↓</span>-0.15</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b10plus.png" alt="10＋"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a10plus.png" alt="10＋"></span></td></tr>
-<tr><td>その他</td><td>1.20</td><td><span style="color:#ff6600;">↑</span>0.07</td><td><span style="color:#0a50a1;">↓</span>-0.22</td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_b05.png" alt="5"></span></td><td><span class="pict-graph"><img src="/guide/kyujin_bairitsu/img/pict-graph_a04.png" alt="4"></span></td></tr>
-</tbody></table>
-*/
+  return array;
+  //Logger.log(array);
 }
