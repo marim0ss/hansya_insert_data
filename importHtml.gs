@@ -40,16 +40,17 @@ function addFeedData() {
   [営業系, 2.33, ↑0.04, ↓-0.14, , ]
   */
   let new_data_array = [];
-  let Reg_exp = /.*IT.*|全体/;
-  
+  let Reg_exp = /.*IT.*/,
+      all_exp = /全体/
   for (var i = 0; i < data_range.length; i++) {
-    if (data_range[i][0].match(Reg_exp)){
-      Logger.log(data_range[i]);
-    }
     
-  //return new_data_array;
-  //Logger.log(new_data_array);
+    if (data_range[i][0].match(Reg_exp) || data_range[i][0].match(all_exp)) { 
+      new_data_array.push( data_range[i].slice(1,4) ); //  配列を加工。０番と最後の二つを取る
+    }
+    //return new_data_array;
   }
+  //return new_data_array;
+  Logger.log(new_data_array.flat()); //１元配列になった
 }
 
 function urlfetch() {
