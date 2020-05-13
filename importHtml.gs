@@ -1,5 +1,6 @@
-const feed_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('feed');
-const add_data_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('add_data');
+const ss = SpreadsheetApp.openById("1JdlyRIaxjIxvQ5wNmhq9D-EK1oPYGOuCP_9qJlyLUJY");
+const feed_sheet = ss.getSheetByName("feed");
+const output_sheet = ss.getSheetByName("output");
 const lastColumn = feed_sheet.getLastColumn();
 // シート関数には +変数+ 
 const doda_url = 'https://doda.jp/guide/kyujin_bairitsu/';
@@ -46,19 +47,22 @@ function addFeedData() {
       return index > index2 && e[0] == e2[0] && e[1] == e2[1];
     });
   });
-  //Logger.log(unique_data_range);
   let new_data_array = [];
+  let array =[];
   let Reg_exp = /.*IT.*/,
-      all_exp = /全体/
-  for (var i = 0; i < unique_data_range.length; i++) {    
-    if (unique_data_range[i][0].match(Reg_exp) || unique_data_range[i][0].match(all_exp)) { 
+      all_exp = /全体/;
+  for (var i = 0; i < unique_data_range.length; i++) {
+    if (unique_data_range[i][0].match(Reg_exp) || unique_data_range[i][0].match(all_exp)) {
       new_data_array.push( unique_data_range[i].slice(1,4) ); //  配列を加工。０番と最後の二つを取る
+     //Logger.log(new_data_array);
     }
-    //return new_data_array;
   }
-  Logger.log(new_data_array)
-  //return new_data_array;
-  //Logger.log(new_data_array.flat()); //１元配列になった
+  new_data_array = new_data_array.flat();
+  for (var j = 0; j < new_data_array.length; j++) {
+    array.push(new_data_array[j].toString())
+  }
+  Logger.log(array);
+  output_sheet.appendRow(array);
 }
 
 function urlfetch() {
