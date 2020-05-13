@@ -28,6 +28,7 @@ function addFeedData() {
       return index > index2 && e[0] == e2[0] && e[1] == e2[1];
     });
   });
+  /*
   for (var i = 0; i < unique_feed_data.length; i++) {
     if (unique_feed_data[i][0].match(it_regExp) || unique_feed_data[i][0].match(whole_regExp)) {
       sliced_unique_feed_data.push( unique_feed_data[i].slice(1,4) ); //  配列を加工。０番と最後の二つを取る
@@ -41,14 +42,25 @@ function addFeedData() {
   Logger.log(array);
   array.unshift(month);
   output_sheet.appendRow(array);
-  /*
-    let map_array = [];
-  const callback = element => element[0].match(it_regExp) || element[0].match(whole_regExp) ? element : [] // [element]にするとflatは相殺される
-  map_array = unique_feed_data.flatMap(callback);
-  //let result = unique_feed_data.flatMap(callback);
-  
-  //Logger.log(result) // [全体, 2.54, ↑ 0.02, ↓ -0.08, -, -, IT・通信, 7.04, ↑0.24, ↓-0.23, , , 技術系（IT・通信）, 9.41, ↑0.72, ↓-0.16, , ]
-  //map_array.concat(unique_feed_data.flatMap(callback));
-  //Logger.log(result[1])
   */
+  
+  const callback = element => element[0].match(it_regExp) || element[0].match(whole_regExp) ? element : [] // [element]にするとflatは相殺される
+  let results = unique_feed_data.flatMap(callback);
+  
+  Logger.log(results) // [全体, 2.54, ↑ 0.02, ↓ -0.08, -, -, IT・通信, 7.04, ↑0.24, ↓-0.23, , , 技術系（IT・通信）, 9.41, ↑0.72, ↓-0.16, , ]
+  var result_map = results.map( function( value, index, array ) {  // 元の配列を更新
+    if( index == 0  || index % 6 == 0) {
+      array[index] = ''; // array[index] = ''
+    }
+    else if (value == '-') {
+     array[index] = '';
+    }
+    else if ( value.toString().match(/[↑↓]-?.+/) ) { // 一度文字列変換してから正規表現match,replace->数字に戻す
+       array[index] = Number(value.replace(/[↑↓]/, ''));
+    }
+    else {
+      array[index] = value;
+    }
+});
+  console.log( results );
 }
