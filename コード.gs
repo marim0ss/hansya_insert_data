@@ -1,6 +1,6 @@
 var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('main');
 var data_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('data');
-var output_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('output');
+var output_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('out_put');
 
 const lastRow = data_sheet.getLastRow();
 var lastColumn_master = data_sheet.getLastColumn();
@@ -67,7 +67,7 @@ function getUrlCmdArray() {
     new_data_range.push( DATA_RANGE[i]); //新しい配列にいれる
   }
   //Logger.log(new_data_range);
-  writeToSheet(output_sheet,new_data_range);
+  writeToSheet(data_sheet,new_data_range);
   //Browser.msgBox("cmd & URLs are made!!", Browser.Buttons.OK);
 }
 
