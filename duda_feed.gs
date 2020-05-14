@@ -1,4 +1,4 @@
-const ss = SpreadsheetApp.getActiveSpreadsheet(),
+const ss = SpreadsheetApp.openById("1_Jn5nXyw8teqOMhPfgbqWbFB_bp_-Xhec4fnQ_3PdaA"),
     feed_sheet = ss.getSheetByName("feed"),
     output_sheet = ss.getSheetByName("output");
 let feed_data = feed_sheet.getDataRange().getValues(),
