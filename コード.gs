@@ -1,24 +1,28 @@
-const ss = SpreadsheetApp.openById("1_Jn5nXyw8teqOMhPfgbqWbFB_bp_-Xhec4fnQ_3PdaA"),
+const ss = SpreadsheetApp.getActiveSpreadsheet(),
     feed_sheet = ss.getSheetByName("feed"),
     output_sheet = ss.getSheetByName("output");
-let feed_data = feed_sheet.getDataRange().getValues();
-//Logger.log(feed_data[2][1], feed_data[22][1]); //配列なので０始まり
+let feed_data = feed_sheet.getDataRange().getValues(),
+    //Logger.log(feed_data[2][1], feed_data[22][1]); //配列なので０始まり
+    feed_a1 = feed_data[0][0]; //feedシートの年月（2020年3月の転職市場の概要）
 
-//実際に実行する部分
+//実際に実行する部分:イベントトリガー設置
 function checkDateAndRun() {
-  let feed_a1 = feed_data[0][0], //feedシートの月（2020年3月の転職市場の概要）
-      lastRow_num = output_sheet.getLastRow(),
+  let lastRow_num = output_sheet.getLastRow(),
       output_lastdata = output_sheet.getRange(lastRow_num ,1).getValue(),//GMT
       formatted_lastdata = Utilities.formatDate(output_lastdata, 'JST', 'yyyy年M月');
   formatted_lastdata += 'の転職市場の概要';
-  //Logger.log(feed_a1,formatted_lastdata)
-  (feed_a1 == formatted_lastdata) ? Logger.log('最新データは記入済み') :  addFeedData()
+  //Logger.log(feed_a1,formatted_lastdata);
+  if (feed_a1 == formatted_lastdata) {
+    Browser.msgBox("最新データは記入済み");
+    return
+  } else  {
+    addFeedData();
+    Browser.msgBox("データ更新しました");
+  }
 }
 function addFeedData() {
-  let month = feed_data[0][0].match(/(.+)の転職市場の概要/); // 年月データ
+  let month = feed_a1.match(/(.+)の転職市場の概要/); // 年月データ
   month = month[1]; //2020年3月
-  let sliced_unique_feed_data = [],
-      array =[];
   let it_regExp = /.*IT.*/,
       whole_regExp = /全体/;
 
@@ -28,32 +32,17 @@ function addFeedData() {
       return index > index2 && e[0] == e2[0] && e[1] == e2[1];
     });
   });
-  /*
-  for (var i = 0; i < unique_feed_data.length; i++) {
-    if (unique_feed_data[i][0].match(it_regExp) || unique_feed_data[i][0].match(whole_regExp)) {
-      sliced_unique_feed_data.push( unique_feed_data[i].slice(1,4) ); //  配列を加工。０番と最後の二つを取る
-     //Logger.log(sliced_unique_feed_data);
-    }
-  }
-  sliced_unique_feed_data = sliced_unique_feed_data.flat();
-  for (var j = 0; j < sliced_unique_feed_data.length; j++) {
-    array.push( sliced_unique_feed_data[j].toString() ) // ログ表示されているのは修正がかっている。実際の値を取得するには.toString()や.Stringify（）が必要、、らしい
-  }
-  Logger.log(array);
-  array.unshift(month);
-  output_sheet.appendRow(array);
-  */
+
+  const callback = element => element[0].match(it_regExp) || element[0].match(whole_regExp) ? element : []
+  let sliced_unique_array = unique_feed_data.flatMap(callback); 
+  //Logger.log(sliced_unique_array) // [全体, 2.54, ↑ 0.02, ↓ -0.08, -, -, IT・通信, 7.04, ↑0.24, ↓-0.23, , , 技術系（IT・通信）, 9.41, ↑0.72, ↓-0.16, , ]
   
-  const callback = element => element[0].match(it_regExp) || element[0].match(whole_regExp) ? element : [] // [element]にするとflatは相殺される
-  let results = unique_feed_data.flatMap(callback);
-  
-  Logger.log(results) // [全体, 2.54, ↑ 0.02, ↓ -0.08, -, -, IT・通信, 7.04, ↑0.24, ↓-0.23, , , 技術系（IT・通信）, 9.41, ↑0.72, ↓-0.16, , ]
-  var result_map = results.map( function( value, index, array ) {  // 元の配列を更新
+  sliced_unique_array.map( function( value, index, array ) {  // 元の配列を更新,flatMapしても、空白[]が残ってしまう。(mapの挙動と変わらない)→後ろでflatする。
     if( index == 0  || index % 6 == 0) {
-      array[index] = ''; // array[index] = ''
+      array[index] = [];
     }
-    else if (value == '-') {
-     array[index] = '';
+    else if (value == '-' || value == '') {
+     array[index] = [];
     }
     else if ( value.toString().match(/[↑↓]-?.+/) ) { // 一度文字列変換してから正規表現match,replace->数字に戻す
        array[index] = Number(value.replace(/[↑↓]/, ''));
@@ -61,6 +50,9 @@ function addFeedData() {
     else {
       array[index] = value;
     }
-});
-  console.log( results );
+  });
+  let result = sliced_unique_array.flat();
+  result.unshift(month);
+  console.log(result);
+  output_sheet.appendRow(result);
 }
