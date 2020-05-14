@@ -1,6 +1,6 @@
 const ss = SpreadsheetApp.openById("1JdlyRIaxjIxvQ5wNmhq9D-EK1oPYGOuCP_9qJlyLUJY");
 const feed_sheet = ss.getSheetByName("feed");
-const output_sheet = ss.getSheetByName("output");
+const output_sheet = ss.getSheetByName("out_put");
 const lastColumn = feed_sheet.getLastColumn();
 // シート関数には +変数+ 
 const doda_url = 'https://doda.jp/guide/kyujin_bairitsu/';
@@ -32,37 +32,6 @@ function setHeaderAndTable(header_row_num, url_cell, xpath, table_num = 1) {
 function setRowColor(header_row, inner_row) {
   feed_sheet.getRange(header_row, 1, 1, lastColumn).setBackground('#84e1ef');
   feed_sheet.getRange(inner_row, 1, 1, lastColumn).setBackground('yellow');
-}
-//スプレッドシートの内容をadd_dataシートに追加
-function addFeedData() {
-  let data_range = feed_sheet.getDataRange().getValues();
-  //Logger.log(data_range[2][1], data_range[22][1]); //配列なので０始まり
-  
-  /* [業種, 求人倍率, 前月比, 前年同月比, 求人数, 転職希望者数] 
-  [営業系, 2.33, ↑0.04, ↓-0.14, , ]
-  */
-  // 「全体」は重複するので弾く  
-  const unique_data_range = data_range.filter(function(e, index){
-    return !data_range.some(function(e2, index2){
-      return index > index2 && e[0] == e2[0] && e[1] == e2[1];
-    });
-  });
-  let new_data_array = [];
-  let array =[];
-  let Reg_exp = /.*IT.*/,
-      all_exp = /全体/;
-  for (var i = 0; i < unique_data_range.length; i++) {
-    if (unique_data_range[i][0].match(Reg_exp) || unique_data_range[i][0].match(all_exp)) {
-      new_data_array.push( unique_data_range[i].slice(1,4) ); //  配列を加工。０番と最後の二つを取る
-     //Logger.log(new_data_array);
-    }
-  }
-  new_data_array = new_data_array.flat();
-  for (var j = 0; j < new_data_array.length; j++) {
-    array.push(new_data_array[j].toString())
-  }
-  Logger.log(array);
-  output_sheet.appendRow(array);
 }
 
 function urlfetch() {
