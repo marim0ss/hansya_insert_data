@@ -1,6 +1,5 @@
-let ss = SpreadsheetApp.openById("1JdlyRIaxjIxvQ5wNmhq9D-EK1oPYGOuCP_9qJlyLUJY");
+
 const feed_sheet = ss.getSheetByName("feed");
-var output_sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('out_put');
 const lastColumn = feed_sheet.getLastColumn();
 // シート関数には +変数+ 
 const doda_url = 'https://doda.jp/guide/kyujin_bairitsu/';
