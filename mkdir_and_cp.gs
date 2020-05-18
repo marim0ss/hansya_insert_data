@@ -1,7 +1,4 @@
 var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('シート2');
-var SEARCH_WORD  = "";
-//var encodeWord = encodeURI(SEARCH_WORD);
-//const TITLE         = 'スクショタイトル';
 
 function sendScreenshotOfWebPage() {
   var url = 
