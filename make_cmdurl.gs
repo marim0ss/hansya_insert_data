@@ -50,9 +50,15 @@ function getUrlCmdArray() {
     .replace("${section_folder_name}",section_folder_name);    
     
     if (checkbox == false){
+/*通常
       var cp_cmd = cp_cmd_origin
       .replace("${sub_folder_name}",seach_word);
       set_cmd = mkdir_cmd + AND + cp_cmd;
+*/
+      // 日経済の場合はcpコマンド変更   
+      var cp_cmd = cp_cmd_origin
+      .replace("${sub_folder_name}",seach_word);
+      set_cmd = cp_cmd;
     }else{  // チェックがついてる=代表者の時、mkdirなし、cp先も変える
       var cp_cmd = cp_cmd_origin
       .replace("${sub_folder_name}",foward_seachword)
