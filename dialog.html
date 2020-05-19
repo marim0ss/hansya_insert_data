@@ -9,7 +9,7 @@
       function handleDownload() {
         // 出力データを GAS から取得する
         var content = <?= getData(); ?>;
-        var blob = new Blob([ content ], { "type" : "text/csv"});
+        var blob = new Blob([ content ], { "type" : "application/pdf"});
         var link = document.createElement('a');
         // ファイル名を GAS から取得する
         link.download = <?= getFileName(); ?>;
