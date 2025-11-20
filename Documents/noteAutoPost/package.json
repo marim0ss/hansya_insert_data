@@ -1,0 +1,17 @@
+{
+  "name": "noteautopost",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "type": "commonjs",
+  "dependencies": {
+    "playwright": "^1.56.1",
+    "@anthropic-ai/claude-code": "1.0.128"
+  }
+}
